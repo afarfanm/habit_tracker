@@ -3,39 +3,33 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:habit_tracker/model/habit.dart';
 import 'package:habit_tracker/model/habits_dao.dart';
-import 'package:habit_tracker/view/habit_log.dart';
-import 'package:habit_tracker/view/header.dart';
-import 'package:habit_tracker/view/habit_name_set_dialog.dart';
+import 'package:habit_tracker/view/habits_table_body.dart';
+import 'package:habit_tracker/view/habits_table_header.dart';
+import 'package:habit_tracker/view/habit_config_dialog.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required String title}) : _title = title;
-
-  final String _title;
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Habit> _habitList = [];
   late final AppLifecycleListener _lifecycleListener;
+  final List<Habit> habits = [];
 
   @override
   void initState() {
     super.initState();
-    HabitsDAO.readHabitRecords().then((fetchedHabits) {
-      setState(() {
-        for (Habit habit in fetchedHabits) {
-          _habitList.add(habit);
-        }
-      });
-    });
     _lifecycleListener = AppLifecycleListener(
       onExitRequested: () async {
-        await HabitsDAO.writeHabitRecords(_habitList);
+        await HabitsDAO.saveHabits();
         return AppExitResponse.exit;
       },
     );
+    HabitsDAO.loadHabits().then((fetchedHabits) {
+      setState(() => habits.addAll(fetchedHabits));
+    });
   }
 
   @override
@@ -48,7 +42,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget._title),
+        title: const Text("Home"),
       ),
       body: Container(
         margin: const EdgeInsets.all(48.0),
@@ -59,66 +53,49 @@ class _HomePageState extends State<HomePage> {
         ),
         child: Column(
           children: [
-            Expanded(
-              child: Header(),
+            const Expanded(
+              child: HabitsTableHeader(),
             ),
             Expanded(
               flex: 5,
-              child: HabitLog(
-                habits: _habitList,
-                onMarkToggle: _toggleHabitDoneToday,
-                onDelete: _removeHabitAt,
-                onEdit: (index) => _showHabitRenameDialog(context, index),
+              child: HabitsTableBody(
+                habits: habits,
+                onHabitDeletionRequested: deleteHabit,
               ),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showHabitCreationDialog(context),
+        onPressed: () => showHabitCreationDialog(),
         tooltip: 'Add habit',
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  void _toggleHabitDoneToday(bool marked, int index) {
-    setState(() {
-      _habitList[index].setDoneToday(marked);
-    });
-  }
-
-  void _removeHabitAt(int index) {
-    setState(() {
-      _habitList.removeAt(index);
-    });
-  }
-
-  void _showHabitCreationDialog(BuildContext context) {
+  void showHabitCreationDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return HabitNameSetDialog(onHabitNameSet: (name) {
-          setState(() {
-            _habitList.add(Habit(name));
-          });
-        });
-      },
-    );
-  }
-
-  void _showHabitRenameDialog(BuildContext context, int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return HabitNameSetDialog(
-          onHabitNameSet: (name) {
+        return HabitConfigDialog(
+          onHabitSet: (name) {
+            Habit newHabit = HabitsDAO.createHabit(name);
             setState(() {
-              _habitList[index].name = name;
+              habits.add(newHabit);
             });
           },
         );
       },
     );
+  }
+
+  void deleteHabit(int index) {
+    bool deleted = HabitsDAO.deleteHabit(index);
+    if (deleted) {
+      setState(() {
+        habits.removeAt(index);
+      });
+    }
   }
 }

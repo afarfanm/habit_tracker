@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:habit_tracker/model/date_dao.dart';
 
-class Header extends StatelessWidget {
-  Header({super.key});
+class HabitsTableHeader extends StatelessWidget {
+  const HabitsTableHeader({super.key});
 
-  final List<String> _weekDates = DateDAO.getLastWeekDays();
-
-  final BoxDecoration _cellDecoration = BoxDecoration(
-    border: Border.all(
-      color: Colors.black,
-      width: 0.5,
-    ),
-  );
+  BoxDecoration get _cellDecoration {
+    return BoxDecoration(
+      border: Border.all(
+        color: Colors.black,
+        width: 0.5,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    List<String> weekDates = DateDAO.getLastWeekDays();
     TextStyle? headingStyle = Theme.of(context).textTheme.displaySmall;
 
     return Row(
@@ -47,7 +48,7 @@ class Header extends StatelessWidget {
                       child: Container(
                         decoration: _cellDecoration,
                         child: Center(
-                          child: Text(_weekDates[i]),
+                          child: Text(weekDates[i]),
                         ),
                       ),
                     );
@@ -76,7 +77,7 @@ class Header extends StatelessWidget {
                 child: Container(
                   decoration: _cellDecoration,
                   child: Center(
-                    child: Text(_weekDates[7]),
+                    child: Text(weekDates[7]),
                   ),
                 ),
               ),

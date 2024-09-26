@@ -1,74 +1,43 @@
-import 'package:flutter/material.dart';
-
 class Habit {
-  // Separator used for the habit records' tokenized strings.
-  static const _tokenSeparator = "\\";
-
-  late String name;
-  late List<bool> history;
-  late int streak;
-
   Habit(this.name)
-      : history = List.filled(8, false),
-        streak = 0;
+      : _history = List.filled(8, false),
+        _streak = 0;
 
-  /// Interprets a record written today.
-  Habit.fromTodayRecord(String record) {
-    List<String> tokens = record.split(_tokenSeparator);
-    List<bool> newHistory = List.filled(8, false);
+  Habit.fromRecordData(this.name, List<bool> history, int streak)
+      : _history = history,
+        _streak = streak;
 
-    name = tokens[0];
-    int i = 0;
-    for (String s in tokens[1].characters) {
-      newHistory[i] = s == "1";
-      ++i;
-    }
-    history = newHistory;
-    streak = int.parse(tokens[2]);
+  /// Identifier for this habit.
+  String name;
+
+  // Current streak count for this habit.
+  int get streak => _streak;
+
+  /// Checks if this habit is marked as done today or not.
+  bool isMarkedToday() {
+    return _history[7];
   }
 
-  /// Interprets a record written days ago.
-  Habit.fromOldRecord(String record, int daysAgo) {
-    List<String> tokens = record.split(_tokenSeparator);
-
-    name = tokens[0];
-    if (daysAgo > 7) {
-      history = List.filled(8, false);
-    } else {
-      List<bool> newHistory = List.filled(8, false);
-      int i = 0;
-      for (String s in tokens[1].substring(daysAgo).characters) {
-        newHistory[i] = s == "1";
-        ++i;
-      }
-      history = newHistory;
-    }
-    streak = history[6] ? int.parse(tokens[2]) : 0;
+  /// Checks if this habit was marked as done in the specificed date N days ago.
+  /// Specifying 0 days ago is equivalent to using the isMarkedToday method.
+  bool isMarkedNDaysAgo(int daysAgo) {
+    return _history[7 - daysAgo];
   }
 
-  /// Creates a tokenized string to use as the record form of this habit.
-  String toRecord() {
-    String record = "$name$_tokenSeparator";
-    for (int i = 0; i < 8; ++i) {
-      record += history[i] ? "1" : "0";
-    }
-    record += "$_tokenSeparator$streak";
-    return record;
+  /// Changes this habit state following its marking or unmarking for today.
+  void toggleMarkedToday() {
+    _history[7] = !_history[7];
+    _streak += _history[7] ? 1 : -1;
   }
 
-  /// Checks wether this habit was marked as done today or not.
-  bool isDoneToday() {
-    return history[7];
+  /// Returns a deep copy of this habit.
+  Habit copy() {
+    String nameCopy = String.fromCharCodes(name.runes);
+    List<bool> historyCopy = List.generate(_history.length, (i) => _history[i]);
+
+    return Habit.fromRecordData(nameCopy, historyCopy, _streak);
   }
 
-  /// Sets this habit as done today or not.
-  void setDoneToday(bool done) {
-    history[7] = done;
-    streak += done ? 1 : -1;
-  }
-
-  /// Checks if this habit is marked in the specified history position.
-  bool isMarkedAtHistory(int index) {
-    return history[index];
-  }
+  final List<bool> _history;
+  int _streak;
 }
