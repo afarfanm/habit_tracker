@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-class NewHabitDialog extends StatefulWidget {
-  const NewHabitDialog(
-      {super.key, required void Function(String) onHabitCreated})
-      : _onHabitCreated = onHabitCreated;
+class HabitNameSetDialog extends StatefulWidget {
+  const HabitNameSetDialog(
+      {super.key, required void Function(String) onHabitNameSet})
+      : _onHabitCreated = onHabitNameSet;
 
   final void Function(String) _onHabitCreated;
 
   @override
-  State<NewHabitDialog> createState() => _NewHabitDialogState();
+  State<HabitNameSetDialog> createState() => _HabitNameSetDialogState();
 }
 
-class _NewHabitDialogState extends State<NewHabitDialog> {
+class _HabitNameSetDialogState extends State<HabitNameSetDialog> {
   late final TextEditingController _newHabitTextInputController;
   String _errorMessage = "";
 
@@ -30,7 +30,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("New habit"),
+      title: const Text("Habit name"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

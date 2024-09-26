@@ -5,7 +5,7 @@ import 'package:habit_tracker/model/habit.dart';
 import 'package:habit_tracker/model/habits_dao.dart';
 import 'package:habit_tracker/view/habit_log.dart';
 import 'package:habit_tracker/view/header.dart';
-import 'package:habit_tracker/view/new_habit_dialog.dart';
+import 'package:habit_tracker/view/habit_name_set_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required String title}) : _title = title;
@@ -59,19 +59,23 @@ class _HomePageState extends State<HomePage> {
         ),
         child: Column(
           children: [
-            Header(),
+            Expanded(
+              child: Header(),
+            ),
             Expanded(
               flex: 5,
-              child: Container(
-                color: Colors.grey[400],
-                child: HabitLog(),
+              child: HabitLog(
+                habits: _habitList,
+                onMarkToggle: _toggleHabitDoneToday,
+                onDelete: _removeHabitAt,
+                onEdit: (index) => _showHabitRenameDialog(context, index),
               ),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showHabitCreationDialog,
+        onPressed: () => _showHabitCreationDialog(context),
         tooltip: 'Add habit',
         child: const Icon(Icons.add),
       ),
@@ -90,17 +94,31 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _showHabitCreationDialog() {
+  void _showHabitCreationDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) =>
-          NewHabitDialog(onHabitCreated: _addHabit),
+      builder: (BuildContext context) {
+        return HabitNameSetDialog(onHabitNameSet: (name) {
+          setState(() {
+            _habitList.add(Habit(name));
+          });
+        });
+      },
     );
   }
 
-  void _addHabit(String name) {
-    setState(() {
-      _habitList.add(Habit(name));
-    });
+  void _showHabitRenameDialog(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return HabitNameSetDialog(
+          onHabitNameSet: (name) {
+            setState(() {
+              _habitList[index].name = name;
+            });
+          },
+        );
+      },
+    );
   }
 }
