@@ -52,14 +52,17 @@ class Habit {
     return record;
   }
 
-  bool getDoneToday() {
+  /// Checks wether this habit was marked as done today or not.
+  bool isDoneToday() {
     return history[7];
   }
 
+  /// Sets this habit as done today or not.
   void setDoneToday(bool done) {
     history[7] = done;
   }
 
+  /// Checks if this habit is marked in the specified history position.
   bool isMarkedAtHistory(int index) {
     return history[index];
   }

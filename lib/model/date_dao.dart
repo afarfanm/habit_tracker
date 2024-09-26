@@ -12,6 +12,7 @@ class DateDAO {
     "Sun"
   ];
 
+  /// Obtains the day of the week and date of the last 7 days.
   static List<String> getLastWeekDays() {
     List<String> lastWeekDays = [];
     DateTime dateIterator = _time.subtract(const Duration(days: 7));
@@ -25,6 +26,7 @@ class DateDAO {
     return lastWeekDays;
   }
 
+  /// Calculates the days passed from the specified date in string format.
   static int daysFrom(String date) {
     List<String> tokens = date.split("/");
     DateTime pastDate = DateTime(

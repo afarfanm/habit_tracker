@@ -31,7 +31,7 @@ class TodayListItem extends StatelessWidget {
           flex: 3,
           fit: FlexFit.tight,
           child: Checkbox(
-            value: _habit.getDoneToday(),
+            value: _habit.isDoneToday(),
             tristate: false,
             onChanged: (marked) => _onMarkToggle(marked!),
             side: _getCheckboxBorderSide(),
