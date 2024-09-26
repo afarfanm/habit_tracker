@@ -16,7 +16,7 @@ class HabitsTableHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<String> weekDates = DateDAO.getLastWeekDays();
-    TextStyle? headingStyle = Theme.of(context).textTheme.displaySmall;
+    TextTheme textTheme = Theme.of(context).textTheme;
 
     return Row(
       children: [
@@ -36,7 +36,7 @@ class HabitsTableHeader extends StatelessWidget {
                   child: Center(
                     child: Text(
                       "Last week",
-                      style: headingStyle,
+                      style: textTheme.displaySmall,
                     ),
                   ),
                 ),
@@ -48,7 +48,10 @@ class HabitsTableHeader extends StatelessWidget {
                       child: Container(
                         decoration: _cellDecoration,
                         child: Center(
-                          child: Text(weekDates[i]),
+                          child: Text(
+                            weekDates[i],
+                            style: textTheme.bodyLarge,
+                          ),
                         ),
                       ),
                     );
@@ -68,7 +71,7 @@ class HabitsTableHeader extends StatelessWidget {
                   child: Center(
                     child: Text(
                       "Today",
-                      style: headingStyle,
+                      style: textTheme.displaySmall,
                     ),
                   ),
                 ),
@@ -77,7 +80,10 @@ class HabitsTableHeader extends StatelessWidget {
                 child: Container(
                   decoration: _cellDecoration,
                   child: Center(
-                    child: Text(weekDates[7]),
+                    child: Text(
+                      weekDates[7],
+                      style: textTheme.bodyLarge,
+                    ),
                   ),
                 ),
               ),
@@ -91,7 +97,7 @@ class HabitsTableHeader extends StatelessWidget {
             child: Center(
               child: Text(
                 "Habits",
-                style: headingStyle,
+                style: textTheme.displaySmall,
               ),
             ),
           ),

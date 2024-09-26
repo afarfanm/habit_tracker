@@ -5,23 +5,27 @@ import 'package:habit_tracker/model/date_dao.dart';
 import 'package:habit_tracker/model/habit.dart';
 
 class HabitsDAO {
+  /// Setter that establishes a listener for a habit created event in this model.
+  static set onHabitListChanged(void Function(int) listener) {
+    _onHabitListChanged = listener;
+  }
+
   /// Setter that configures a listener for a milestone-achieved event in some
   /// habit after several days of streak.
   static set onStreakMilestoneAchieved(void Function(Habit) listener) {
     _onStreakMilestoneAchieved = listener;
   }
 
-  /// Reads and returns the saved data of previous session's habit records.
-  static Future<List<Habit>> loadHabits() async {
+  /// Reads the saved data of previous session's habit records.
+  static Future<void> init() async {
     final file = _localFile;
     if (!(await file.exists())) {
-      return [];
+      return;
     }
 
     List<String> records = await file.readAsLines();
     String recordsDate = records[0];
     int daysPassed = DateDAO.daysFrom(recordsDate);
-    List<Habit> habitsCopy = [];
 
     for (String record in records.sublist(1)) {
       List<String> tokens = record.split(_tokenSeparator);
@@ -45,21 +49,29 @@ class HabitsDAO {
       Habit habit = Habit.fromRecordData(name, history, streak);
 
       _habits.add(habit);
-      habitsCopy.add(habit.copy());
     }
 
-    return habitsCopy;
+    _onHabitListChanged(_habits.length);
+  }
+
+  /// Returns the data of the indexed habit.
+  static Habit fetchHabit(int index) {
+    return _habits[index].copy();
   }
 
   /// Registers a new habit with the specified name in the records.
-  static Habit createHabit(String name) {
+  static void createHabit(String name) {
     Habit newHabit = Habit(name);
     _habits.add(newHabit);
-    return newHabit.copy();
+
+    Future.delayed(
+      const Duration(milliseconds: 10),
+      () => _onHabitListChanged(_habits.length),
+    );
   }
 
   /// Updates the record of the indexed habit after marking or unmarking it today.
-  static bool toggleHabitMarkedToday(int index) {
+  static Future<void> toggleHabitMarkedToday(int index) async {
     _habits[index].toggleMarkedToday();
 
     if (_habits[index].isMarkedToday() && _hasStreakReachedMilestone(index)) {
@@ -70,20 +82,20 @@ class HabitsDAO {
         },
       );
     }
-
-    return true;
   }
 
   /// Changes the name of the indexed habit to the specified one.
-  static String renameHabit(int index, String name) {
+  static Future<void> renameHabit(int index, String name) async {
     _habits[index].name = name;
-    return _habits[index].name;
   }
 
   /// Removes the indexed habit from the records.
-  static bool deleteHabit(int index) {
+  static void deleteHabit(int index) {
     _habits.removeAt(index);
-    return true;
+    Future.delayed(
+      const Duration(milliseconds: 10),
+      () => _onHabitListChanged(_habits.length),
+    );
   }
 
   /// Saves the data of the current habit records for future sessions.
@@ -105,12 +117,15 @@ class HabitsDAO {
 
   static final List<Habit> _habits = [];
 
+  static late final void Function(int) _onHabitListChanged;
+
   static File get _localFile {
     return File("${Directory.current.path}/habits.txt");
   }
 
   // Separator used for the habit records' tokenized strings.
   static const String _tokenSeparator = "\\";
+
   static late void Function(Habit) _onStreakMilestoneAchieved;
 
   /// Checks if the indexed habit's streak reached a milestone value.
