@@ -2,11 +2,14 @@ class Habit {
   Habit(this.name)
       : _history = List.filled(8, false),
         _streak = 0,
+        _daysInterrupted = 0,
         _renderKey = _getInstanceRenderKey();
 
-  Habit.fromRecordData(this.name, List<bool> history, int streak)
+  Habit.fromRecordData(
+      this.name, List<bool> history, int streak, int daysInterrupted)
       : _history = history,
         _streak = streak,
+        _daysInterrupted = daysInterrupted,
         _renderKey = _getInstanceRenderKey();
 
   /// Identifier for this habit.
@@ -17,6 +20,9 @@ class Habit {
 
   // Unique renderization key for this habit.
   int get renderKey => _renderKey;
+
+  // Days that this habit hasn't been marked.
+  int get daysInterrupted => _daysInterrupted;
 
   /// Checks if this habit is marked as done today or not.
   bool isMarkedToday() {
@@ -44,19 +50,22 @@ class Habit {
       nameCopy,
       historyCopy,
       _streak,
+      _daysInterrupted,
       _renderKey,
     );
   }
 
   // Private, full parameter constructor used to deep-copy this habit.
-  Habit._fromOriginalToCopy(
-      this.name, List<bool> history, int streak, int renderKey)
+  Habit._fromOriginalToCopy(this.name, List<bool> history, int streak,
+      int daysInterrupted, int renderKey)
       : _history = history,
         _streak = streak,
+        _daysInterrupted = daysInterrupted,
         _renderKey = renderKey;
 
   final List<bool> _history;
   final int _renderKey;
+  final int _daysInterrupted;
   int _streak;
 
   static int _nextInstanceRenderKey = 0;

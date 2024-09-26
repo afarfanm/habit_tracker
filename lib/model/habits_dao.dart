@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:habit_tracker/model/alerts_dao.dart';
 import 'package:habit_tracker/model/date_dao.dart';
 import 'package:habit_tracker/model/habit.dart';
 
@@ -41,14 +42,32 @@ class HabitsDAO {
         }
       }
 
-      int streak = 0;
-      if (daysPassed < 1 || history[6]) {
+      int streak;
+      int daysInterrumpted;
+
+      if (daysPassed == 0) {
         streak = int.parse(tokens[2]);
+        daysInterrumpted = int.parse(tokens[3]);
+      } else if (history[6]) {
+        streak = int.parse(tokens[2]);
+        daysInterrumpted = 0;
+      } else {
+        streak = 0;
+        daysInterrumpted = int.parse(tokens[3]) + daysPassed;
       }
 
-      Habit habit = Habit.fromRecordData(name, history, streak);
+      Habit habit = Habit.fromRecordData(
+        name,
+        history,
+        streak,
+        daysInterrumpted,
+      );
 
       _habits.add(habit);
+
+      if (daysInterrumpted > 6) {
+        AlertsDAO.addAlert(habit);
+      }
     }
 
     _onHabitListChanged(_habits.length);
@@ -113,6 +132,7 @@ class HabitsDAO {
         record += habit.isMarkedNDaysAgo(i) ? "1" : "0";
       }
       record += "$_tokenSeparator${habit.streak}";
+      record += "$_tokenSeparator${habit.daysInterrupted}";
 
       records += "$record\n";
     }
