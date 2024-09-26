@@ -71,6 +71,7 @@ class HabitsDAO {
     }
 
     _onHabitListChanged(_habits.length);
+    AlertsDAO.finishInitialization();
   }
 
   // Returns the key of the indexed habit used to differentiate it

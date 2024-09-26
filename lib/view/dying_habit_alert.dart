@@ -1,7 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:habit_tracker/model/alert.dart';
 
 class DyingHabitAlert extends StatelessWidget {
-  const DyingHabitAlert({super.key});
+  DyingHabitAlert({super.key, required this.alert}) {
+    int daysInterrupted = alert.daysInterrupted;
+
+    if (daysInterrupted < 14) {
+      _feedbackMessage = "go back to it and start a new streak!";
+    } else if (daysInterrupted < 21) {
+      _feedbackMessage = "don't give up on it and start a new streak!";
+    } else {
+      _feedbackMessage = "give it another chance and start a new streak!";
+    }
+  }
+
+  final Alert alert;
+  late final String _feedbackMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -22,31 +36,23 @@ class DyingHabitAlert extends StatelessWidget {
               text: TextSpan(
                 text: "Your habit ",
                 style: TextStyle(color: colorScheme.onSecondaryContainer),
-                children: const [
+                children: [
                   TextSpan(
-                    text: "[Habit Name]",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    text: alert.habitName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  TextSpan(
+                  const TextSpan(
                     text: " hasn't been marked for ",
                   ),
                   TextSpan(
-                    text: "[N days]",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    text: "${alert.daysInterrupted} days",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   TextSpan(
-                    text: ", resume it and start a streak!",
+                    text: ", $_feedbackMessage",
                   ),
                 ],
               ),
-            ),
-          ),
-          SizedBox(height: 8.0),
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              onPressed: () => print("Alert button pressed"),
-              child: const Text("Got it!"),
             ),
           ),
         ],

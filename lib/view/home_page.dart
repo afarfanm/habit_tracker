@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:habit_tracker/model/alerts_dao.dart';
 import 'package:habit_tracker/model/habit.dart';
 import 'package:habit_tracker/model/habits_dao.dart';
 import 'package:habit_tracker/view/dying_habit_panel.dart';
@@ -18,6 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final AppLifecycleListener _lifecycleListener;
+  bool alertsPending = false;
 
   @override
   void initState() {
@@ -29,6 +31,7 @@ class _HomePageState extends State<HomePage> {
       },
     );
     HabitsDAO.onStreakMilestoneAchieved = showHabitStreakMilestoneDialog;
+    AlertsDAO.onAlertsDetected = setAlertsPending;
   }
 
   @override
@@ -46,12 +49,20 @@ class _HomePageState extends State<HomePage> {
           builder: (context) {
             return IconButton(
               onPressed: () => Scaffold.of(context).openDrawer(),
-              icon: Icon(Icons.notification_important),
+              icon: Builder(
+                builder: (context) {
+                  if (alertsPending) {
+                    return const Icon(Icons.notification_important);
+                  } else {
+                    return const Icon(Icons.notification_important_outlined);
+                  }
+                },
+              ),
             );
           },
         ),
       ),
-      drawer: Drawer(
+      drawer: const Drawer(
         child: DyingHabitPanel(),
       ),
       body: Container(
@@ -101,5 +112,11 @@ class _HomePageState extends State<HomePage> {
         return StreakMilestoneDialog(habit: habit);
       },
     );
+  }
+
+  void setAlertsPending() {
+    setState(() {
+      alertsPending = true;
+    });
   }
 }

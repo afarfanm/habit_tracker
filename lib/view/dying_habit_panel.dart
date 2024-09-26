@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habit_tracker/model/alerts_dao.dart';
 import 'package:habit_tracker/view/dying_habit_alert.dart';
 
 class DyingHabitPanel extends StatelessWidget {
@@ -20,13 +21,23 @@ class DyingHabitPanel extends StatelessWidget {
         ),
         Expanded(
           flex: 9,
-          child: ListView(
-            children: List.generate(
-              5,
-              (i) {
-                return DyingHabitAlert();
-              },
-            ),
+          child: Builder(
+            builder: (context) {
+              int numberOfAlerts = AlertsDAO.numberOfAlerts();
+
+              if (numberOfAlerts == 0) {
+                return const Text("There are no alerts");
+              } else {
+                return ListView(
+                  children: List.generate(
+                    numberOfAlerts,
+                    (i) {
+                      return DyingHabitAlert(alert: AlertsDAO.fetchAlert(i));
+                    },
+                  ),
+                );
+              }
+            },
           ),
         ),
       ],
