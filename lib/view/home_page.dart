@@ -6,6 +6,7 @@ import 'package:habit_tracker/model/habits_dao.dart';
 import 'package:habit_tracker/view/habits_table_body.dart';
 import 'package:habit_tracker/view/habits_table_header.dart';
 import 'package:habit_tracker/view/habit_config_dialog.dart';
+import 'package:habit_tracker/view/streak_milestone_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,6 +31,7 @@ class _HomePageState extends State<HomePage> {
     HabitsDAO.loadHabits().then((fetchedHabits) {
       setState(() => habits.addAll(fetchedHabits));
     });
+    HabitsDAO.onStreakMilestoneAchieved = showHabitStreakMilestoneDialog;
   }
 
   @override
@@ -97,5 +99,14 @@ class _HomePageState extends State<HomePage> {
         habits.removeAt(index);
       });
     }
+  }
+
+  void showHabitStreakMilestoneDialog(Habit habit) {
+    showDialog(
+      context: context,
+      builder: (buildContext) {
+        return StreakMilestoneDialog(habit: habit);
+      },
+    );
   }
 }

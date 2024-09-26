@@ -5,6 +5,12 @@ import 'package:habit_tracker/model/date_dao.dart';
 import 'package:habit_tracker/model/habit.dart';
 
 class HabitsDAO {
+  /// Setter that configures a listener for a milestone-achieved event in some
+  /// habit after several days of streak.
+  static set onStreakMilestoneAchieved(void Function(Habit) listener) {
+    _onStreakMilestoneAchieved = listener;
+  }
+
   /// Reads and returns the saved data of previous session's habit records.
   static Future<List<Habit>> loadHabits() async {
     final file = _localFile;
@@ -55,6 +61,16 @@ class HabitsDAO {
   /// Updates the record of the indexed habit after marking or unmarking it today.
   static bool toggleHabitMarkedToday(int index) {
     _habits[index].toggleMarkedToday();
+
+    if (_habits[index].isMarkedToday() && _hasStreakReachedMilestone(index)) {
+      Future.delayed(
+        const Duration(milliseconds: 100),
+        () {
+          _onStreakMilestoneAchieved(_habits[index].copy());
+        },
+      );
+    }
+
     return true;
   }
 
@@ -95,4 +111,13 @@ class HabitsDAO {
 
   // Separator used for the habit records' tokenized strings.
   static const String _tokenSeparator = "\\";
+  static late void Function(Habit) _onStreakMilestoneAchieved;
+
+  /// Checks if the indexed habit's streak reached a milestone value.
+  static bool _hasStreakReachedMilestone(int index) {
+    int streak = _habits[index].streak;
+
+    return (streak > 6) &&
+        ((streak < 25 && streak % 7 == 0) || streak % 25 == 0);
+  }
 }
