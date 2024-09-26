@@ -19,6 +19,8 @@ class StreakMilestoneDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return AlertDialog(
       title: const Text(
         "Milestone achieved!",
@@ -30,7 +32,7 @@ class StreakMilestoneDialog extends StatelessWidget {
           RichText(
             text: TextSpan(
               text: "You reached ",
-              style: const TextStyle(color: Colors.black),
+              style: TextStyle(color: colorScheme.onSurface),
               children: [
                 TextSpan(
                   text: "${habit.streak} days",

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:habit_tracker/model/habit.dart';
 import 'package:habit_tracker/model/habits_dao.dart';
+import 'package:habit_tracker/view/dying_habit_panel.dart';
 import 'package:habit_tracker/view/habits_table_body.dart';
 import 'package:habit_tracker/view/habits_table_header.dart';
 import 'package:habit_tracker/view/habit_config_dialog.dart';
@@ -45,6 +46,17 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home"),
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              icon: Icon(Icons.notification_important),
+            );
+          },
+        ),
+      ),
+      drawer: Drawer(
+        child: DyingHabitPanel(),
       ),
       body: Container(
         margin: const EdgeInsets.all(48.0),
