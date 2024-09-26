@@ -1,17 +1,22 @@
 class Habit {
   Habit(this.name)
       : _history = List.filled(8, false),
-        _streak = 0;
+        _streak = 0,
+        _renderKey = _getInstanceRenderKey();
 
   Habit.fromRecordData(this.name, List<bool> history, int streak)
       : _history = history,
-        _streak = streak;
+        _streak = streak,
+        _renderKey = _getInstanceRenderKey();
 
   /// Identifier for this habit.
   String name;
 
   // Current streak count for this habit.
   int get streak => _streak;
+
+  // Unique renderization key for this habit.
+  int get renderKey => _renderKey;
 
   /// Checks if this habit is marked as done today or not.
   bool isMarkedToday() {
@@ -35,9 +40,28 @@ class Habit {
     String nameCopy = String.fromCharCodes(name.runes);
     List<bool> historyCopy = List.generate(_history.length, (i) => _history[i]);
 
-    return Habit.fromRecordData(nameCopy, historyCopy, _streak);
+    return Habit._fromOriginalToCopy(
+      nameCopy,
+      historyCopy,
+      _streak,
+      _renderKey,
+    );
   }
 
+  // Private, full parameter constructor used to deep-copy this habit.
+  Habit._fromOriginalToCopy(
+      this.name, List<bool> history, int streak, int renderKey)
+      : _history = history,
+        _streak = streak,
+        _renderKey = renderKey;
+
   final List<bool> _history;
+  final int _renderKey;
   int _streak;
+
+  static int _nextInstanceRenderKey = 0;
+
+  static int _getInstanceRenderKey() {
+    return _nextInstanceRenderKey++;
+  }
 }

@@ -31,7 +31,7 @@ class _HabitsTableBodyState extends State<HabitsTableBody> {
           habitListLength,
           (i) {
             return HabitRow(
-              key: UniqueKey(),
+              key: Key("${HabitsDAO.getHabitRenderKey(i)}"),
               habitIndex: i,
             );
           },

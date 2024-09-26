@@ -54,6 +54,12 @@ class HabitsDAO {
     _onHabitListChanged(_habits.length);
   }
 
+  // Returns the key of the indexed habit used to differentiate it
+  // in render times.
+  static int getHabitRenderKey(int index) {
+    return _habits[index].renderKey;
+  }
+
   /// Returns the data of the indexed habit.
   static Habit fetchHabit(int index) {
     return _habits[index].copy();
