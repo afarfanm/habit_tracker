@@ -8,6 +8,7 @@ class HabitsDAO {
     return File("${Directory.current.path}/habits.txt");
   }
 
+  /// Saves the current habit list for data persistence.
   static Future<File> writeHabitRecords(List<Habit> habitList) {
     String records = "${DateDAO.todayString}\n";
 
@@ -18,6 +19,7 @@ class HabitsDAO {
     return file.writeAsString(records);
   }
 
+  /// Reads the persisted data of previous habit list records, if any.
   static Future<List<Habit>> readHabitRecords() async {
     final file = _localFile;
     if (!(await file.exists())) {
@@ -34,7 +36,7 @@ class HabitsDAO {
       }
     } else {
       for (String record in records.sublist(1)) {
-        habits.add(Habit.fromOldRecord(record));
+        habits.add(Habit.fromOldRecord(record, DateDAO.daysFrom(recordsDate)));
       }
     }
 

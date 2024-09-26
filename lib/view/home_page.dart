@@ -3,8 +3,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:habit_tracker/model/habit.dart';
 import 'package:habit_tracker/model/habits_dao.dart';
-import 'package:habit_tracker/view/new_habit_dialog.dart';
-import 'package:habit_tracker/view/today_list_item.dart';
+import 'package:habit_tracker/view/habit_log.dart';
+import 'package:habit_tracker/view/header.dart';
+import 'package:habit_tracker/view/habit_name_set_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required String title}) : _title = title;
@@ -49,54 +50,41 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(widget._title),
       ),
-      body: Center(
+      body: Container(
+        margin: const EdgeInsets.all(48.0),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.black,
+          ),
+        ),
         child: Column(
           children: [
-            Text("Today", style: _getHeadlineStyle(context)),
-            const SizedBox(height: 16.0),
             Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: _generateHabitList(),
-                ),
+              child: Header(),
+            ),
+            Expanded(
+              flex: 5,
+              child: HabitLog(
+                habits: _habitList,
+                onMarkToggle: _toggleHabitDoneToday,
+                onDelete: _removeHabitAt,
+                onEdit: (index) => _showHabitRenameDialog(context, index),
               ),
             ),
-            const SizedBox(height: 100),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showHabitCreationDialog,
+        onPressed: () => _showHabitCreationDialog(context),
         tooltip: 'Add habit',
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  TextStyle? _getHeadlineStyle(BuildContext context) {
-    return Theme.of(context).textTheme.headlineMedium;
-  }
-
-  List<Widget> _generateHabitList() {
-    return List.generate(
-      _habitList.length,
-      (i) {
-        return Container(
-          color: i % 2 == 0 ? Colors.green[500] : Colors.green[400],
-          child: TodayListItem(
-            habit: _habitList[i],
-            onMarkToggle: (m) => _toggleHabitDoneMark(m, i),
-            onDelete: () => _removeHabitAt(i),
-          ),
-        );
-      },
-    );
-  }
-
-  void _toggleHabitDoneMark(bool marked, int index) {
+  void _toggleHabitDoneToday(bool marked, int index) {
     setState(() {
-      _habitList[index].done = marked;
+      _habitList[index].setDoneToday(marked);
     });
   }
 
@@ -106,17 +94,31 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _showHabitCreationDialog() {
+  void _showHabitCreationDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) =>
-          NewHabitDialog(onHabitCreated: _addHabit),
+      builder: (BuildContext context) {
+        return HabitNameSetDialog(onHabitNameSet: (name) {
+          setState(() {
+            _habitList.add(Habit(name));
+          });
+        });
+      },
     );
   }
 
-  void _addHabit(String name) {
-    setState(() {
-      _habitList.add(Habit(name));
-    });
+  void _showHabitRenameDialog(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return HabitNameSetDialog(
+          onHabitNameSet: (name) {
+            setState(() {
+              _habitList[index].name = name;
+            });
+          },
+        );
+      },
+    );
   }
 }
