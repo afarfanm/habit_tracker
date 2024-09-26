@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 
-class HabitNameSetDialog extends StatefulWidget {
-  const HabitNameSetDialog(
-      {super.key, required void Function(String) onHabitNameSet})
-      : _onHabitCreated = onHabitNameSet;
+class HabitConfigDialog extends StatefulWidget {
+  const HabitConfigDialog({super.key, required this.onHabitSet});
 
-  final void Function(String) _onHabitCreated;
+  final void Function(String) onHabitSet;
 
   @override
-  State<HabitNameSetDialog> createState() => _HabitNameSetDialogState();
+  State<HabitConfigDialog> createState() => _HabitConfigDialogState();
 }
 
-class _HabitNameSetDialogState extends State<HabitNameSetDialog> {
+class _HabitConfigDialogState extends State<HabitConfigDialog> {
   late final TextEditingController _newHabitTextInputController;
   String _errorMessage = "";
 
@@ -37,6 +35,7 @@ class _HabitNameSetDialogState extends State<HabitNameSetDialog> {
           TextField(
             controller: _newHabitTextInputController,
             autofocus: true,
+            maxLength: 80,
           ),
           const SizedBox(height: 16.0),
           Builder(builder: _renderOptionalErrorMessage),
@@ -49,7 +48,7 @@ class _HabitNameSetDialogState extends State<HabitNameSetDialog> {
         ),
         ElevatedButton(
           onPressed: () => _confirmHabitCreation(context),
-          child: const Text("Add"),
+          child: const Text("Set"),
         ),
       ],
     );
@@ -80,7 +79,7 @@ class _HabitNameSetDialogState extends State<HabitNameSetDialog> {
       });
     } else {
       _errorMessage = "";
-      widget._onHabitCreated(newHabitName);
+      widget.onHabitSet(newHabitName);
       Navigator.of(context).pop();
     }
   }
