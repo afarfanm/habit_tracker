@@ -1,28 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:habit_tracker/model/habit.dart';
+import 'package:habit_tracker/model/habits_dao.dart';
 import 'package:habit_tracker/view/habit_row.dart';
 
-class HabitsTableBody extends StatelessWidget {
-  const HabitsTableBody({
-    super.key,
-    required this.habits,
-    required this.onHabitDeletionRequested,
-  });
+class HabitsTableBody extends StatefulWidget {
+  const HabitsTableBody({super.key});
 
-  final List<Habit> habits;
-  final void Function(int) onHabitDeletionRequested;
+  @override
+  State<StatefulWidget> createState() => _HabitsTableBodyState();
+}
+
+class _HabitsTableBodyState extends State<HabitsTableBody> {
+  int habitListLength = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    HabitsDAO.onHabitListChanged = (newLength) {
+      setState(() {
+        habitListLength = newLength;
+      });
+    };
+    HabitsDAO.init();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: List.generate(
-          habits.length,
+          habitListLength,
           (i) {
             return HabitRow(
-              habit: habits[i],
-              index: i,
-              onHabitDeletionRequested: onHabitDeletionRequested,
+              key: UniqueKey(),
+              habitIndex: i,
             );
           },
         ),

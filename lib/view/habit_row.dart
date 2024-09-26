@@ -6,28 +6,35 @@ import 'package:habit_tracker/view/habit_row_cell.dart';
 import 'package:habit_tracker/view/streak_counter.dart';
 
 class HabitRow extends StatefulWidget {
-  const HabitRow(
-      {super.key,
-      required this.habit,
-      required this.index,
-      required this.onHabitDeletionRequested});
+  const HabitRow({
+    super.key,
+    required this.habitIndex,
+  });
 
-  final Habit habit;
-  final int index;
-  final void Function(int) onHabitDeletionRequested;
+  final int habitIndex;
 
   @override
   State<StatefulWidget> createState() => _HabitRowState();
 }
 
 class _HabitRowState extends State<HabitRow> {
+  late Habit habit;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      habit = HabitsDAO.fetchHabit(widget.habitIndex);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     TextTheme textTheme = Theme.of(context).textTheme;
 
     return Container(
-      color: widget.index % 2 == 0
+      color: widget.habitIndex % 2 == 0
           ? colorScheme.surfaceContainer
           : colorScheme.surfaceContainerHigh,
       child: Row(
@@ -36,7 +43,7 @@ class _HabitRowState extends State<HabitRow> {
             flex: 2,
             child: HabitRowCell(
               child: IconButton(
-                onPressed: () => widget.onHabitDeletionRequested(widget.index),
+                onPressed: deleteHabit,
                 icon: Icon(
                   Icons.delete,
                   color: colorScheme.secondary,
@@ -51,7 +58,7 @@ class _HabitRowState extends State<HabitRow> {
                 flex: 3,
                 child: HabitRowCell(
                   child: Builder(builder: (context) {
-                    if (widget.habit.isMarkedNDaysAgo(7 - i)) {
+                    if (habit.isMarkedNDaysAgo(7 - i)) {
                       return Icon(
                         Icons.check,
                         color: colorScheme.tertiary,
@@ -71,7 +78,7 @@ class _HabitRowState extends State<HabitRow> {
               child: Transform.scale(
                 scale: 1.8,
                 child: Checkbox(
-                  value: widget.habit.isMarkedToday(),
+                  value: habit.isMarkedToday(),
                   onChanged: (value) => toggleHabitMarkedToday(),
                 ),
               ),
@@ -81,8 +88,8 @@ class _HabitRowState extends State<HabitRow> {
             flex: 2,
             child: HabitRowCell(
               child: StreakCounter(
-                streakActive: widget.habit.isMarkedToday(),
-                streakCount: widget.habit.streak,
+                streakActive: habit.isMarkedToday(),
+                streakCount: habit.streak,
               ),
             ),
           ),
@@ -103,7 +110,7 @@ class _HabitRowState extends State<HabitRow> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        widget.habit.name,
+                        habit.name,
                         style: textTheme.bodyLarge!
                             .copyWith(color: colorScheme.tertiary),
                         maxLines: 3,
@@ -121,12 +128,11 @@ class _HabitRowState extends State<HabitRow> {
   }
 
   void toggleHabitMarkedToday() {
-    bool toggled = HabitsDAO.toggleHabitMarkedToday(widget.index);
-    if (toggled) {
+    HabitsDAO.toggleHabitMarkedToday(widget.habitIndex).then((voidValue) {
       setState(() {
-        widget.habit.toggleMarkedToday();
+        habit.toggleMarkedToday();
       });
-    }
+    });
   }
 
   void showHabitEditDialog() {
@@ -134,12 +140,17 @@ class _HabitRowState extends State<HabitRow> {
       context: context,
       builder: (BuildContext context) {
         return HabitConfigDialog(onHabitSet: (name) {
-          String newName = HabitsDAO.renameHabit(widget.index, name);
-          setState(() {
-            widget.habit.name = newName;
+          HabitsDAO.renameHabit(widget.habitIndex, name).then((voidValue) {
+            setState(() {
+              habit.name = name;
+            });
           });
         });
       },
     );
+  }
+
+  void deleteHabit() {
+    HabitsDAO.deleteHabit(widget.habitIndex);
   }
 }
