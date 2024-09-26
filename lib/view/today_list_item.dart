@@ -18,10 +18,15 @@ class TodayListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(4.0),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          IconButton(
+            onPressed: _onDelete,
+            icon: const Icon(Icons.delete, color: Colors.white),
+          ),
+          const SizedBox(width: 8.0),
           Checkbox(
             value: _habit.done,
             tristate: false,
@@ -30,17 +35,13 @@ class TodayListItem extends StatelessWidget {
             activeColor: Colors.transparent,
             checkColor: Colors.white,
           ),
+          const SizedBox(width: 8.0),
           SizedBox(
             width: 300.0,
             child: Text(
               _habit.name,
               style: const TextStyle(color: Colors.white),
             ),
-          ),
-          const SizedBox(width: 8.0),
-          IconButton(
-            onPressed: _onDelete,
-            icon: const Icon(Icons.delete, color: Colors.white),
           ),
         ],
       ),

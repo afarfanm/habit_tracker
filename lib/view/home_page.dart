@@ -5,6 +5,7 @@ import 'package:habit_tracker/model/habit.dart';
 import 'package:habit_tracker/model/habits_dao.dart';
 import 'package:habit_tracker/view/new_habit_dialog.dart';
 import 'package:habit_tracker/view/today_list_item.dart';
+import 'package:habit_tracker/view/today_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required String title}) : _title = title;
@@ -49,20 +50,19 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(widget._title),
       ),
-      body: Center(
-        child: Column(
+      body: Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
           children: [
-            Text("Today", style: _getHeadlineStyle(context)),
-            const SizedBox(height: 16.0),
             Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: _generateHabitList(),
-                ),
-              ),
+              child: Placeholder(),
             ),
-            const SizedBox(height: 100),
+            const SizedBox(width: 16.0),
+            TodaySection(
+              habitList: _habitList,
+              onHabitMarkToggle: _toggleHabitDoneMark,
+              onHabitRemove: _removeHabitAt,
+            ),
           ],
         ),
       ),
@@ -71,26 +71,6 @@ class _HomePageState extends State<HomePage> {
         tooltip: 'Add habit',
         child: const Icon(Icons.add),
       ),
-    );
-  }
-
-  TextStyle? _getHeadlineStyle(BuildContext context) {
-    return Theme.of(context).textTheme.headlineMedium;
-  }
-
-  List<Widget> _generateHabitList() {
-    return List.generate(
-      _habitList.length,
-      (i) {
-        return Container(
-          color: i % 2 == 0 ? Colors.green[500] : Colors.green[400],
-          child: TodayListItem(
-            habit: _habitList[i],
-            onMarkToggle: (m) => _toggleHabitDoneMark(m, i),
-            onDelete: () => _removeHabitAt(i),
-          ),
-        );
-      },
     );
   }
 
