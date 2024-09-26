@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
               fit: FlexFit.tight,
               child: TodaySection(
                 habitList: _habitList,
-                onHabitMarkToggle: _toggleHabitDoneMark,
+                onHabitMarkToggle: _toggleHabitDoneToday,
                 onHabitRemove: _removeHabitAt,
               ),
             ),
@@ -80,9 +80,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _toggleHabitDoneMark(bool marked, int index) {
+  void _toggleHabitDoneToday(bool marked, int index) {
     setState(() {
-      _habitList[index].done = marked;
+      _habitList[index].setDoneToday(marked);
     });
   }
 

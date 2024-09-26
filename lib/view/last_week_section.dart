@@ -91,14 +91,6 @@ class LastWeekSection extends StatelessWidget {
     return Theme.of(context).textTheme.headlineMedium;
   }
 
-  WidgetStateBorderSide _getCheckboxBorderSide() {
-    return WidgetStateBorderSide.resolveWith((states) {
-      return const BorderSide(
-        width: 2.0,
-      );
-    });
-  }
-
   List<TableRow> _generateWeekHistory() {
     return List.generate(
       _habitList.length,
@@ -115,7 +107,9 @@ class LastWeekSection extends StatelessWidget {
               ),
             ),
             ...List.generate(7, (i) {
-              return Icon(Icons.check);
+              return habit.isMarkedAtHistory(i)
+                  ? const Icon(Icons.check)
+                  : Container();
             }),
           ],
         );

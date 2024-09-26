@@ -34,7 +34,7 @@ class HabitsDAO {
       }
     } else {
       for (String record in records.sublist(1)) {
-        habits.add(Habit.fromOldRecord(record));
+        habits.add(Habit.fromOldRecord(record, DateDAO.daysFrom(recordsDate)));
       }
     }
 

@@ -55,7 +55,7 @@ class TodaySection extends StatelessWidget {
       _habitList.length,
       (i) {
         return Container(
-          constraints: BoxConstraints(minHeight: 40.0),
+          constraints: const BoxConstraints(minHeight: 40.0),
           color: i % 2 == 0 ? Colors.green[500] : Colors.green[400],
           child: TodayListItem(
             habit: _habitList[i],

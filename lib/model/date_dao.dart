@@ -24,4 +24,11 @@ class DateDAO {
 
     return lastWeekDays;
   }
+
+  static int daysFrom(String date) {
+    List<String> tokens = date.split("/");
+    DateTime pastDate = DateTime(
+        int.parse(tokens[2]), int.parse(tokens[1]), int.parse(tokens[0]));
+    return _time.difference(pastDate).inDays;
+  }
 }
