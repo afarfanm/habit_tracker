@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:habit_tracker/model/alerts_dao.dart';
 import 'package:habit_tracker/model/habit.dart';
 import 'package:habit_tracker/model/habits_dao.dart';
+import 'package:habit_tracker/view/dying_habit_panel.dart';
 import 'package:habit_tracker/view/habits_table_body.dart';
 import 'package:habit_tracker/view/habits_table_header.dart';
 import 'package:habit_tracker/view/habit_config_dialog.dart';
@@ -17,6 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final AppLifecycleListener _lifecycleListener;
+  bool alertsPending = false;
 
   @override
   void initState() {
@@ -28,6 +31,7 @@ class _HomePageState extends State<HomePage> {
       },
     );
     HabitsDAO.onStreakMilestoneAchieved = showHabitStreakMilestoneDialog;
+    AlertsDAO.onAlertsPendingStateChanged = updateAlertsPendingState;
   }
 
   @override
@@ -41,6 +45,25 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home"),
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              icon: Builder(
+                builder: (context) {
+                  if (alertsPending) {
+                    return const Icon(Icons.notification_important);
+                  } else {
+                    return const Icon(Icons.notification_important_outlined);
+                  }
+                },
+              ),
+            );
+          },
+        ),
+      ),
+      drawer: const Drawer(
+        child: DyingHabitPanel(),
       ),
       body: Container(
         margin: const EdgeInsets.all(48.0),
@@ -89,5 +112,11 @@ class _HomePageState extends State<HomePage> {
         return StreakMilestoneDialog(habit: habit);
       },
     );
+  }
+
+  void updateAlertsPendingState(bool alertsPending) {
+    setState(() {
+      this.alertsPending = alertsPending;
+    });
   }
 }
