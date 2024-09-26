@@ -18,7 +18,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final AppLifecycleListener _lifecycleListener;
-  final List<Habit> habits = [];
 
   @override
   void initState() {
@@ -29,9 +28,6 @@ class _HomePageState extends State<HomePage> {
         return AppExitResponse.exit;
       },
     );
-    HabitsDAO.loadHabits().then((fetchedHabits) {
-      setState(() => habits.addAll(fetchedHabits));
-    });
     HabitsDAO.onStreakMilestoneAchieved = showHabitStreakMilestoneDialog;
   }
 
@@ -65,17 +61,14 @@ class _HomePageState extends State<HomePage> {
             color: Colors.black,
           ),
         ),
-        child: Column(
+        child: const Column(
           children: [
-            const Expanded(
+            Expanded(
               child: HabitsTableHeader(),
             ),
             Expanded(
               flex: 5,
-              child: HabitsTableBody(
-                habits: habits,
-                onHabitDeletionRequested: deleteHabit,
-              ),
+              child: HabitsTableBody(),
             ),
           ],
         ),
@@ -94,23 +87,11 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext context) {
         return HabitConfigDialog(
           onHabitSet: (name) {
-            Habit newHabit = HabitsDAO.createHabit(name);
-            setState(() {
-              habits.add(newHabit);
-            });
+            HabitsDAO.createHabit(name);
           },
         );
       },
     );
-  }
-
-  void deleteHabit(int index) {
-    bool deleted = HabitsDAO.deleteHabit(index);
-    if (deleted) {
-      setState(() {
-        habits.removeAt(index);
-      });
-    }
   }
 
   void showHabitStreakMilestoneDialog(Habit habit) {

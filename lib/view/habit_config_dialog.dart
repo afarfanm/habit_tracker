@@ -35,7 +35,7 @@ class _HabitConfigDialogState extends State<HabitConfigDialog> {
           TextField(
             controller: _newHabitTextInputController,
             autofocus: true,
-            maxLength: 80,
+            maxLength: 75,
           ),
           const SizedBox(height: 16.0),
           Builder(builder: _renderOptionalErrorMessage),
