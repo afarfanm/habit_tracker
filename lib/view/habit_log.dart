@@ -29,11 +29,11 @@ class HabitLog extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Table(
-        defaultColumnWidth: const FractionColumnWidth(3 / 32),
+        defaultColumnWidth: const FractionColumnWidth(3 / 36),
         columnWidths: const <int, TableColumnWidth>{
-          0: FractionColumnWidth(1 / 32),
-          9: FractionColumnWidth(1 / 32),
-          10: FractionColumnWidth(6 / 32),
+          0: FractionColumnWidth(2 / 36),
+          9: FractionColumnWidth(2 / 36),
+          10: FractionColumnWidth(8 / 36),
         },
         border: TableBorder.all(),
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
@@ -52,23 +52,55 @@ class HabitLog extends StatelessWidget {
               ...List.generate(
                 7,
                 (i) => currentHabit.isMarkedAtHistory(i)
-                    ? const Icon(Icons.check)
+                    ? const Icon(
+                        Icons.check,
+                        size: 40.0,
+                      )
                     : Container(),
               ),
-              Checkbox(
-                value: currentHabit.isDoneToday(),
-                onChanged: (val) => _onMarkToggle(val!, i),
-              ),
-              IconButton(
-                onPressed: () => _onEdit(i),
-                icon: const Icon(Icons.edit),
+              Transform.scale(
+                scale: 1.8,
+                child: Checkbox(
+                  value: currentHabit.isDoneToday(),
+                  onChanged: (val) => _onMarkToggle(val!, i),
+                ),
               ),
               Container(
-                constraints: const BoxConstraints(minHeight: 40.0),
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(currentHabit.name),
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.local_fire_department,
+                      size: 50.0,
+                      color: Colors.black
+                          .withOpacity(currentHabit.isDoneToday() ? 1.0 : 0.2),
+                    ),
+                    Text(
+                      "${currentHabit.streak}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black.withOpacity(
+                            currentHabit.isDoneToday() ? 1.0 : 0.2),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(4.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      onPressed: () => _onEdit(i),
+                      icon: const Icon(Icons.edit),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(currentHabit.name),
+                    ),
+                  ],
                 ),
               ),
             ],

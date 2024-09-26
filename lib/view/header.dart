@@ -20,6 +20,7 @@ class Header extends StatelessWidget {
     return Row(
       children: [
         Expanded(
+          flex: 2,
           child: Container(
             decoration: _cellDecoration,
           ),
@@ -83,7 +84,7 @@ class Header extends StatelessWidget {
           ),
         ),
         Expanded(
-          flex: 7,
+          flex: 10,
           child: Container(
             decoration: _cellDecoration,
             child: Center(

@@ -6,10 +6,11 @@ class Habit {
 
   late String name;
   late List<bool> history;
+  late int streak;
 
-  Habit(this.name) {
-    history = List.filled(8, false);
-  }
+  Habit(this.name)
+      : history = List.filled(8, false),
+        streak = 0;
 
   /// Interprets a record written today.
   Habit.fromTodayRecord(String record) {
@@ -23,6 +24,7 @@ class Habit {
       ++i;
     }
     history = newHistory;
+    streak = int.parse(tokens[2]);
   }
 
   /// Interprets a record written days ago.
@@ -41,6 +43,7 @@ class Habit {
       }
       history = newHistory;
     }
+    streak = history[6] ? int.parse(tokens[2]) : 0;
   }
 
   /// Creates a tokenized string to use as the record form of this habit.
@@ -49,6 +52,7 @@ class Habit {
     for (int i = 0; i < 8; ++i) {
       record += history[i] ? "1" : "0";
     }
+    record += "$_tokenSeparator$streak";
     return record;
   }
 
@@ -60,6 +64,7 @@ class Habit {
   /// Sets this habit as done today or not.
   void setDoneToday(bool done) {
     history[7] = done;
+    streak += done ? 1 : -1;
   }
 
   /// Checks if this habit is marked in the specified history position.
