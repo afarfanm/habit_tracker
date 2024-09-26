@@ -24,11 +24,17 @@ class TodaySection extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Text("Today", style: _getHeadlineStyle(context)),
+          Flexible(
+            flex: 1,
+            fit: FlexFit.tight,
+            child: Container(
+              padding: EdgeInsets.all(8.0),
+              child: Text("Today", style: _getHeadlineStyle(context)),
+            ),
           ),
-          Expanded(
+          Flexible(
+            flex: 9,
+            fit: FlexFit.tight,
             child: SingleChildScrollView(
               child: Column(
                 children: _generateHabitList(),
@@ -49,6 +55,7 @@ class TodaySection extends StatelessWidget {
       _habitList.length,
       (i) {
         return Container(
+          constraints: BoxConstraints(minHeight: 40.0),
           color: i % 2 == 0 ? Colors.green[500] : Colors.green[400],
           child: TodayListItem(
             habit: _habitList[i],

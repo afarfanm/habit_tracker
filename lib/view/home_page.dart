@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:habit_tracker/model/habit.dart';
 import 'package:habit_tracker/model/habits_dao.dart';
+import 'package:habit_tracker/view/last_week_section.dart';
 import 'package:habit_tracker/view/new_habit_dialog.dart';
-import 'package:habit_tracker/view/today_list_item.dart';
 import 'package:habit_tracker/view/today_section.dart';
 
 class HomePage extends StatefulWidget {
@@ -54,14 +54,20 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            Expanded(
-              child: Placeholder(),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: LastWeekSection(habitList: _habitList),
             ),
             const SizedBox(width: 16.0),
-            TodaySection(
-              habitList: _habitList,
-              onHabitMarkToggle: _toggleHabitDoneMark,
-              onHabitRemove: _removeHabitAt,
+            Flexible(
+              flex: 1,
+              fit: FlexFit.tight,
+              child: TodaySection(
+                habitList: _habitList,
+                onHabitMarkToggle: _toggleHabitDoneMark,
+                onHabitRemove: _removeHabitAt,
+              ),
             ),
           ],
         ),

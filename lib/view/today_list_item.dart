@@ -17,17 +17,20 @@ class TodayListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(4.0),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
+    return Row(
+      children: [
+        Flexible(
+          flex: 3,
+          fit: FlexFit.tight,
+          child: IconButton(
             onPressed: _onDelete,
             icon: const Icon(Icons.delete, color: Colors.white),
           ),
-          const SizedBox(width: 8.0),
-          Checkbox(
+        ),
+        Flexible(
+          flex: 3,
+          fit: FlexFit.tight,
+          child: Checkbox(
             value: _habit.done,
             tristate: false,
             onChanged: (marked) => _onMarkToggle(marked!),
@@ -35,16 +38,16 @@ class TodayListItem extends StatelessWidget {
             activeColor: Colors.transparent,
             checkColor: Colors.white,
           ),
-          const SizedBox(width: 8.0),
-          SizedBox(
-            width: 300.0,
-            child: Text(
-              _habit.name,
-              style: const TextStyle(color: Colors.white),
-            ),
+        ),
+        Flexible(
+          flex: 16,
+          fit: FlexFit.tight,
+          child: Text(
+            _habit.name,
+            style: const TextStyle(color: Colors.white),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
