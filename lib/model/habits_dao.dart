@@ -43,41 +43,37 @@ class HabitsDAO {
       }
 
       int streak;
-      int daysInterrumpted;
+      int daysInterrupted;
 
       if (daysPassed == 0) {
         streak = int.parse(tokens[2]);
-        daysInterrumpted = int.parse(tokens[3]);
+        daysInterrupted = int.parse(tokens[3]);
       } else if (history[6]) {
         streak = int.parse(tokens[2]);
-        daysInterrumpted = 0;
+        daysInterrupted = 0;
       } else {
         streak = 0;
-        daysInterrumpted = int.parse(tokens[3]) + daysPassed;
+        daysInterrupted = int.parse(tokens[3]) + daysPassed;
       }
 
       Habit habit = Habit.fromRecordData(
         name,
         history,
         streak,
-        daysInterrumpted,
+        daysInterrupted,
       );
 
       _habits.add(habit);
-
-      if (daysInterrumpted > 6) {
-        AlertsDAO.addAlert(habit);
-      }
+      AlertsDAO.checkHabitForAlert(habit.copy());
     }
 
     _onHabitListChanged(_habits.length);
     AlertsDAO.finishInitialization();
   }
 
-  // Returns the key of the indexed habit used to differentiate it
-  // in render times.
-  static int getHabitRenderKey(int index) {
-    return _habits[index].renderKey;
+  // Returns the unique id of the indexed habit.
+  static int getHabitId(int index) {
+    return _habits[index].id;
   }
 
   /// Returns the data of the indexed habit.
@@ -98,13 +94,16 @@ class HabitsDAO {
 
   /// Updates the record of the indexed habit after marking or unmarking it today.
   static Future<void> toggleHabitMarkedToday(int index) async {
-    _habits[index].toggleMarkedToday();
+    Habit habit = _habits[index];
+    habit.toggleMarkedToday();
 
-    if (_habits[index].isMarkedToday() && _hasStreakReachedMilestone(index)) {
+    AlertsDAO.updateAlertsAfterHabitToggle(habit.copy());
+
+    if (habit.isMarkedToday() && _hasStreakReachedMilestone(habit.streak)) {
       Future.delayed(
         const Duration(milliseconds: 100),
         () {
-          _onStreakMilestoneAchieved(_habits[index].copy());
+          _onStreakMilestoneAchieved(habit.copy());
         },
       );
     }
@@ -117,7 +116,8 @@ class HabitsDAO {
 
   /// Removes the indexed habit from the records.
   static void deleteHabit(int index) {
-    _habits.removeAt(index);
+    Habit habit = _habits.removeAt(index);
+    AlertsDAO.updateAlertsAfterHabitDeletion(habit.copy());
     Future.delayed(
       const Duration(milliseconds: 10),
       () => _onHabitListChanged(_habits.length),
@@ -155,10 +155,8 @@ class HabitsDAO {
 
   static late void Function(Habit) _onStreakMilestoneAchieved;
 
-  /// Checks if the indexed habit's streak reached a milestone value.
-  static bool _hasStreakReachedMilestone(int index) {
-    int streak = _habits[index].streak;
-
+  /// Checks if the passed streak has reached a milestone value.
+  static bool _hasStreakReachedMilestone(int streak) {
     return (streak > 6) &&
         ((streak < 25 && streak % 7 == 0) || streak % 25 == 0);
   }

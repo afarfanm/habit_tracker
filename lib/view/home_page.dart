@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
       },
     );
     HabitsDAO.onStreakMilestoneAchieved = showHabitStreakMilestoneDialog;
-    AlertsDAO.onAlertsDetected = setAlertsPending;
+    AlertsDAO.onAlertsPendingStateChanged = updateAlertsPendingState;
   }
 
   @override
@@ -114,9 +114,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void setAlertsPending() {
+  void updateAlertsPendingState(bool alertsPending) {
     setState(() {
-      alertsPending = true;
+      this.alertsPending = alertsPending;
     });
   }
 }

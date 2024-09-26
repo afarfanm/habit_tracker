@@ -3,23 +3,23 @@ class Habit {
       : _history = List.filled(8, false),
         _streak = 0,
         _daysInterrupted = 0,
-        _renderKey = _getInstanceRenderKey();
+        _id = _getInstanceId();
 
   Habit.fromRecordData(
       this.name, List<bool> history, int streak, int daysInterrupted)
       : _history = history,
         _streak = streak,
         _daysInterrupted = daysInterrupted,
-        _renderKey = _getInstanceRenderKey();
+        _id = _getInstanceId();
 
-  /// Identifier for this habit.
+  /// Name assigned to this habit.
   String name;
 
   // Current streak count for this habit.
   int get streak => _streak;
 
-  // Unique renderization key for this habit.
-  int get renderKey => _renderKey;
+  // Unique id for this habit.
+  int get id => _id;
 
   // Days that this habit hasn't been marked.
   int get daysInterrupted => _daysInterrupted;
@@ -51,26 +51,30 @@ class Habit {
       historyCopy,
       _streak,
       _daysInterrupted,
-      _renderKey,
+      _id,
     );
   }
 
   // Private, full parameter constructor used to deep-copy this habit.
-  Habit._fromOriginalToCopy(this.name, List<bool> history, int streak,
-      int daysInterrupted, int renderKey)
-      : _history = history,
+  Habit._fromOriginalToCopy(
+    this.name,
+    List<bool> history,
+    int streak,
+    int daysInterrupted,
+    int id,
+  )   : _history = history,
         _streak = streak,
         _daysInterrupted = daysInterrupted,
-        _renderKey = renderKey;
+        _id = id;
 
   final List<bool> _history;
-  final int _renderKey;
+  final int _id;
   final int _daysInterrupted;
   int _streak;
 
-  static int _nextInstanceRenderKey = 0;
+  static int _nextInstanceId = 0;
 
-  static int _getInstanceRenderKey() {
-    return _nextInstanceRenderKey++;
+  static int _getInstanceId() {
+    return _nextInstanceId++;
   }
 }
