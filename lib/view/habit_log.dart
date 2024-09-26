@@ -41,6 +41,9 @@ class HabitLog extends StatelessWidget {
           Habit currentHabit = _habits[i];
 
           return TableRow(
+            decoration: BoxDecoration(
+              color: i % 2 == 0 ? Colors.green[200] : Colors.green[300],
+            ),
             children: [
               IconButton(
                 onPressed: () => _onDelete(i),
