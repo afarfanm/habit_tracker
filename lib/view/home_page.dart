@@ -3,9 +3,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:habit_tracker/model/habit.dart';
 import 'package:habit_tracker/model/habits_dao.dart';
-import 'package:habit_tracker/view/last_week_section.dart';
+import 'package:habit_tracker/view/habit_log.dart';
+import 'package:habit_tracker/view/header.dart';
 import 'package:habit_tracker/view/new_habit_dialog.dart';
-import 'package:habit_tracker/view/today_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required String title}) : _title = title;
@@ -51,22 +51,20 @@ class _HomePageState extends State<HomePage> {
         title: Text(widget._title),
       ),
       body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
+        margin: const EdgeInsets.all(48.0),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.black,
+          ),
+        ),
+        child: Column(
           children: [
-            Flexible(
-              flex: 2,
-              fit: FlexFit.tight,
-              child: LastWeekSection(habitList: _habitList),
-            ),
-            const SizedBox(width: 16.0),
-            Flexible(
-              flex: 1,
-              fit: FlexFit.tight,
-              child: TodaySection(
-                habitList: _habitList,
-                onHabitMarkToggle: _toggleHabitDoneToday,
-                onHabitRemove: _removeHabitAt,
+            Header(),
+            Expanded(
+              flex: 5,
+              child: Container(
+                color: Colors.grey[400],
+                child: HabitLog(),
               ),
             ),
           ],

@@ -17,9 +17,9 @@ class DateDAO {
     List<String> lastWeekDays = [];
     DateTime dateIterator = _time.subtract(const Duration(days: 7));
 
-    for (int i = 0; i < 7; ++i) {
+    for (int i = 0; i < 8; ++i) {
       lastWeekDays.add(
-          "${weekdays[dateIterator.weekday]}\n${dateIterator.day > 9 ? dateIterator.day : "0${dateIterator.day}"}");
+          "${weekdays[dateIterator.weekday]} ${dateIterator.day > 9 ? dateIterator.day : "0${dateIterator.day}"}");
       dateIterator = dateIterator.add(const Duration(days: 1));
     }
 
